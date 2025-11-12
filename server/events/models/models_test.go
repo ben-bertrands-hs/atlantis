@@ -726,3 +726,176 @@ func TestPlanSuccessStats(t *testing.T) {
 		})
 	}
 }
+
+func TestPlanSuccess_GetResourceSummary(t *testing.T) {
+	tests := []struct {
+		name   string
+		output string
+		exp    models.ResourceSummary
+	}{
+		{
+			name: "multiple resource types",
+			output: `Terraform will perform the following actions:
+
+  # module.cluster_c2.kubernetes_manifest.karpenter_controller["apps/v1/Deployment/karpenter/karpenter-default"] will be created
++ resource "kubernetes_manifest" "karpenter_controller" {
+      + manifest = (known after apply)
+    }
+
+  # module.cluster_c2.kubernetes_manifest.karpenter_controller["apps/v1/StatefulSet/karpenter/karpenter-default"] will be destroyed
+- resource "kubernetes_manifest" "karpenter_controller" {
+      - manifest = {...} -> null
+    }
+
+  # module.redacted.aws_route53_record.redacted_record will be updated in-place
+~ resource "aws_route53_record" "redacted_record" {
+      ~ records = ["foo"] -> ["bar"]
+    }
+
+  # module.redacted.aws_instance.redacted must be replaced
+-/+ resource "aws_instance" "redacted" {
+      ~ ami = "ami-old" -> "ami-new" # forces replacement
+    }
+
+Plan: 1 to add, 1 to change, 2 to destroy.`,
+			exp: models.ResourceSummary{
+				Created: []string{
+					`module.cluster_c2.kubernetes_manifest.karpenter_controller["apps/v1/Deployment/karpenter/karpenter-default"]`,
+				},
+				Modified: []string{
+					`module.redacted.aws_route53_record.redacted_record`,
+				},
+				Replaced: []string{
+					`module.redacted.aws_instance.redacted`,
+				},
+				Destroyed: []string{
+					`module.cluster_c2.kubernetes_manifest.karpenter_controller["apps/v1/StatefulSet/karpenter/karpenter-default"]`,
+				},
+			},
+		},
+		{
+			name: "only creates",
+			output: `Terraform will perform the following actions:
+
+  # null_resource.simple[0] will be created
++ resource "null_resource" "simple" {
+      + id = (known after apply)
+    }
+
+  # null_resource.simple2 will be created
++ resource "null_resource" "simple2" {
+      + id = (known after apply)
+    }
+
+Plan: 2 to add, 0 to change, 0 to destroy.`,
+			exp: models.ResourceSummary{
+				Created:   []string{"null_resource.simple[0]", "null_resource.simple2"},
+				Modified:  []string{},
+				Replaced:  []string{},
+				Destroyed: []string{},
+			},
+		},
+		{
+			name:   "no changes",
+			output: `No changes. Your infrastructure matches the configuration.`,
+			exp: models.ResourceSummary{
+				Created:   []string{},
+				Modified:  []string{},
+				Replaced:  []string{},
+				Destroyed: []string{},
+			},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			planSuccess := models.PlanSuccess{TerraformOutput: tt.output}
+			summary := planSuccess.GetResourceSummary()
+			
+			if len(summary.Created) != len(tt.exp.Created) {
+				t.Errorf("Created: exp %d, got %d", len(tt.exp.Created), len(summary.Created))
+			}
+			for i, exp := range tt.exp.Created {
+				if i >= len(summary.Created) || summary.Created[i] != exp {
+					t.Errorf("Created[%d]: exp %q, got %q", i, exp, summary.Created[i])
+				}
+			}
+			
+			if len(summary.Modified) != len(tt.exp.Modified) {
+				t.Errorf("Modified: exp %d, got %d", len(tt.exp.Modified), len(summary.Modified))
+			}
+			for i, exp := range tt.exp.Modified {
+				if i >= len(summary.Modified) || summary.Modified[i] != exp {
+					t.Errorf("Modified[%d]: exp %q, got %q", i, exp, summary.Modified[i])
+				}
+			}
+			
+			if len(summary.Replaced) != len(tt.exp.Replaced) {
+				t.Errorf("Replaced: exp %d, got %d", len(tt.exp.Replaced), len(summary.Replaced))
+			}
+			for i, exp := range tt.exp.Replaced {
+				if i >= len(summary.Replaced) || summary.Replaced[i] != exp {
+					t.Errorf("Replaced[%d]: exp %q, got %q", i, exp, summary.Replaced[i])
+				}
+			}
+			
+			if len(summary.Destroyed) != len(tt.exp.Destroyed) {
+				t.Errorf("Destroyed: exp %d, got %d", len(tt.exp.Destroyed), len(summary.Destroyed))
+			}
+			for i, exp := range tt.exp.Destroyed {
+				if i >= len(summary.Destroyed) || summary.Destroyed[i] != exp {
+					t.Errorf("Destroyed[%d]: exp %q, got %q", i, exp, summary.Destroyed[i])
+				}
+			}
+		})
+	}
+}
+
+func TestPlanSuccess_FormatResourceSummary(t *testing.T) {
+	planSuccess := models.PlanSuccess{
+		TerraformOutput: `Terraform will perform the following actions:
+
+  # module.cluster.resource.example will be created
++ resource "example" "test" {}
+
+  # module.cluster.resource.example2 will be destroyed
+- resource "example" "test2" {}
+
+Plan: 1 to add, 0 to change, 1 to destroy.`,
+	}
+	
+	formatted := planSuccess.FormatResourceSummary()
+	
+	if formatted == "" {
+		t.Error("Expected non-empty formatted output")
+	}
+	
+	// Check for expected headings
+	if !contains(formatted, "**Resources to be created:**") {
+		t.Error("Expected 'Resources to be created' heading")
+	}
+	if !contains(formatted, "**Resources to be destroyed:**") {
+		t.Error("Expected 'Resources to be destroyed' heading")
+	}
+	
+	// Check for resource names
+	if !contains(formatted, "module.cluster.resource.example") {
+		t.Error("Expected created resource in output")
+	}
+	if !contains(formatted, "module.cluster.resource.example2") {
+		t.Error("Expected destroyed resource in output")
+	}
+}
+
+func contains(s, substr string) bool {
+	return len(s) >= len(substr) && (s == substr || len(s) > len(substr) && findSubstring(s, substr))
+}
+
+func findSubstring(s, substr string) bool {
+	for i := 0; i <= len(s)-len(substr); i++ {
+		if s[i:i+len(substr)] == substr {
+			return true
+		}
+	}
+	return false
+}
