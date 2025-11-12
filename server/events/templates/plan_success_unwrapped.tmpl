@@ -2,6 +2,12 @@
 ```diff
 {{ if .EnableDiffMarkdownFormat }}{{ .DiffMarkdownFormattedTerraformOutput }}{{ else }}{{ .TerraformOutput }}{{ end }}
 ```
+{{ if and .EnableExtendedPlanSummary .FormatExtendedPlanSummary -}}
+```diff
+{{ .FormatExtendedPlanSummary }}
+```
+{{ end -}}
+
 
 {{ if .PlanWasDeleted -}}
 This plan was not saved because one or more projects failed and automerge requires all plans pass.

@@ -54,6 +54,7 @@ type MarkdownRenderer struct {
 	disableMarkdownFolding    bool
 	disableRepoLocking        bool
 	enableDiffMarkdownFormat  bool
+	enableExtendedPlanSummary bool
 	markdownTemplates         *template.Template
 	executableName            string
 	hideUnchangedPlanComments bool
@@ -114,12 +115,13 @@ type applyResultData struct {
 
 type planSuccessData struct {
 	models.PlanSuccess
-	PlanSummary              string
-	PlanWasDeleted           bool
-	DisableApply             bool
-	DisableRepoLocking       bool
-	EnableDiffMarkdownFormat bool
-	PlanStats                models.PlanSuccessStats
+	PlanSummary               string
+	PlanWasDeleted            bool
+	DisableApply              bool
+	DisableRepoLocking        bool
+	EnableDiffMarkdownFormat  bool
+	EnableExtendedPlanSummary bool
+	PlanStats                 models.PlanSuccessStats
 }
 
 type policyCheckResultsData struct {
@@ -149,6 +151,7 @@ func NewMarkdownRenderer(
 	disableMarkdownFolding bool,
 	disableRepoLocking bool,
 	enableDiffMarkdownFormat bool,
+	EnableExtendedPlanSummary bool,
 	markdownTemplateOverridesDir string,
 	executableName string,
 	hideUnchangedPlanComments bool,
@@ -167,6 +170,7 @@ func NewMarkdownRenderer(
 		disableApply:              disableApply,
 		disableRepoLocking:        disableRepoLocking,
 		enableDiffMarkdownFormat:  enableDiffMarkdownFormat,
+		enableExtendedPlanSummary: EnableExtendedPlanSummary,
 		markdownTemplates:         templates,
 		executableName:            executableName,
 		hideUnchangedPlanComments: hideUnchangedPlanComments,
@@ -238,12 +242,13 @@ func (m *MarkdownRenderer) renderProjectResults(ctx *command.Context, results []
 		if result.PlanSuccess != nil {
 			result.PlanSuccess.TerraformOutput = strings.TrimSpace(result.PlanSuccess.TerraformOutput)
 			data := planSuccessData{
-				PlanSuccess:              *result.PlanSuccess,
-				PlanWasDeleted:           common.PlansDeleted,
-				DisableApply:             common.DisableApply,
-				DisableRepoLocking:       common.DisableRepoLocking,
-				EnableDiffMarkdownFormat: common.EnableDiffMarkdownFormat,
-				PlanStats:                result.PlanSuccess.Stats(),
+				PlanSuccess:               *result.PlanSuccess,
+				PlanWasDeleted:            common.PlansDeleted,
+				DisableApply:              common.DisableApply,
+				DisableRepoLocking:        common.DisableRepoLocking,
+				EnableDiffMarkdownFormat:  common.EnableDiffMarkdownFormat,
+				EnableExtendedPlanSummary: m.enableExtendedPlanSummary,
+				PlanStats:                 result.PlanSuccess.Stats(),
 			}
 			if m.shouldUseWrappedTmpl(vcsHost, result.PlanSuccess.TerraformOutput) {
 				data.PlanSummary = result.PlanSuccess.Summary()

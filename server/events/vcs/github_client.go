@@ -231,7 +231,7 @@ func (g *GithubClient) CreateComment(logger logging.SimpleLogging, repo models.R
 	var sepStart string
 
 	sepEnd := "\n```\n</details>" +
-		"\n<br>\n\n**Warning**: Output length greater than max comment size. Continued in next comment."
+		"\n<br>\n\n**Warning**: b"
 
 	if command != "" {
 		sepStart = fmt.Sprintf("Continued %s output from previous comment.\n<details><summary>Show Output</summary>\n\n", command) +

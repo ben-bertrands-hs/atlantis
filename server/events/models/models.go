@@ -23,6 +23,7 @@ import (
 	"net/url"
 	paths "path"
 	"regexp"
+	"sort"
 	"strconv"
 	"strings"
 	"time"
@@ -441,6 +442,8 @@ var (
 	diffKeywordRegex = regexp.MustCompile(`(?m)^( +)([-+~]\s)(.*)(\s=\s|\s->\s|<<|\{|\(known after apply\)| {2,}[^ ]+:.*)(.*)`)
 	diffListRegex    = regexp.MustCompile(`(?m)^( +)([-+~]\s)(".*",)`)
 	diffTildeRegex   = regexp.MustCompile(`(?m)^~`)
+	// Regex to extract resource change lines from Terraform output
+	resourceChangeRegex = regexp.MustCompile(`(?m)^\s*#\s+(.+?)\s+(will be created|will be destroyed|will be updated in-place|must be replaced|will be replaced)`)
 )
 
 // DiffMarkdownFormattedTerraformOutput formats the Terraform output to match diff markdown format
@@ -450,6 +453,92 @@ func (p PlanSuccess) DiffMarkdownFormattedTerraformOutput() string {
 	formattedTerraformOutput = diffTildeRegex.ReplaceAllString(formattedTerraformOutput, "!")
 
 	return strings.TrimSpace(formattedTerraformOutput)
+}
+
+// ResourceSummary represents a categorized summary of resource changes
+type ResourceSummary struct {
+	Created   []string
+	Modified  []string
+	Replaced  []string
+	Destroyed []string
+}
+
+// GetResourceSummary extracts a summary of which resources will be created, modified, replaced, or destroyed
+func (p PlanSuccess) GetResourceSummary() ResourceSummary {
+	summary := ResourceSummary{
+		Created:   []string{},
+		Modified:  []string{},
+		Replaced:  []string{},
+		Destroyed: []string{},
+	}
+
+	matches := resourceChangeRegex.FindAllStringSubmatch(p.TerraformOutput, -1)
+
+	for _, match := range matches {
+		if len(match) >= 3 {
+			resourceName := match[1]
+			action := match[2]
+
+			switch action {
+			case "will be created":
+				summary.Created = append(summary.Created, resourceName)
+			case "will be destroyed":
+				summary.Destroyed = append(summary.Destroyed, resourceName)
+			case "will be updated in-place":
+				summary.Modified = append(summary.Modified, resourceName)
+			case "must be replaced", "will be replaced":
+				summary.Replaced = append(summary.Replaced, resourceName)
+			}
+		}
+	}
+
+	// Sort all slices alphabetically
+	sort.Strings(summary.Created)
+	sort.Strings(summary.Modified)
+	sort.Strings(summary.Replaced)
+	sort.Strings(summary.Destroyed)
+
+	return summary
+}
+
+// FormatExtendedPlanSummary returns a formatted string representation of the resource summary
+func (p PlanSuccess) FormatExtendedPlanSummary() string {
+	summary := p.GetResourceSummary()
+	var output strings.Builder
+
+	if len(summary.Created) > 0 {
+		output.WriteString(fmt.Sprintf("+ will be created (%d)\n", len(summary.Created)))
+		for _, resource := range summary.Created {
+			output.WriteString(fmt.Sprintf("+ %s\n", resource))
+		}
+		output.WriteString("\n")
+	}
+
+	if len(summary.Modified) > 0 {
+		output.WriteString(fmt.Sprintf("! will be updated in-place (%d)\n", len(summary.Modified)))
+		for _, resource := range summary.Modified {
+			output.WriteString(fmt.Sprintf("! %s\n", resource))
+		}
+		output.WriteString("\n")
+	}
+
+	if len(summary.Replaced) > 0 {
+		output.WriteString(fmt.Sprintf("-/+ must be replaced (%d)\n", len(summary.Replaced)))
+		for _, resource := range summary.Replaced {
+			output.WriteString(fmt.Sprintf("-/+ %s\n", resource))
+		}
+		output.WriteString("\n")
+	}
+
+	if len(summary.Destroyed) > 0 {
+		output.WriteString(fmt.Sprintf("- will be destroyed (%d)\n", len(summary.Destroyed)))
+		for _, resource := range summary.Destroyed {
+			output.WriteString(fmt.Sprintf("- %s\n", resource))
+		}
+		output.WriteString("\n")
+	}
+
+	return strings.TrimSpace(output.String())
 }
 
 // Stats returns plan change stats and contextual information.

@@ -6,6 +6,14 @@
 ```
 </details>
 
+{{ if and .EnableExtendedPlanSummary .FormatExtendedPlanSummary -}}
+<details><summary>Show extended plan summary</summary>
+```diff
+{{ .FormatExtendedPlanSummary }}
+```
+</details>
+{{ end -}}
+
 {{ if .PlanWasDeleted -}}
 This plan was not saved because one or more projects failed and automerge requires all plans pass.
 {{ else -}}

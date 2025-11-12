@@ -165,6 +165,7 @@ var testFlags = map[string]interface{}{
 	EnablePolicyChecksFlag:           false,
 	EnableRegExpCmdFlag:              false,
 	EnableDiffMarkdownFormat:         false,
+	EnableExtendedPlanSummaryFlag:    false,
 	EnableProfilingAPI:               false,
 }
 

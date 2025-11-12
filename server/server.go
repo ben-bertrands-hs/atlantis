@@ -485,6 +485,7 @@ func NewServer(userConfig UserConfig, config Config) (*Server, error) {
 		userConfig.DisableMarkdownFolding,
 		userConfig.DisableRepoLocking,
 		userConfig.EnableDiffMarkdownFormat,
+		userConfig.EnableExtendedPlanSummaryFlag,
 		userConfig.MarkdownTemplateOverridesDir,
 		userConfig.ExecutableName,
 		userConfig.HideUnchangedPlanComments,

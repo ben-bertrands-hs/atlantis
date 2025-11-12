@@ -560,6 +560,16 @@ Enable Atlantis to format Terraform plan output into a markdown-diff friendly fo
 
 Useful to enable for use with GitHub.
 
+### `--enable-extended-plan-summary`
+
+```bash
+atlantis server --enable-extended-plan-summary
+# or
+ATLANTIS_ENABLE_EXTENDED_PLAN_SUMMARY=true
+```
+
+Enable resource summary in plan comments showing which resources will be created, modified, replaced, or destroyed.
+
 ### `--enable-policy-checks` <Badge text="v0.17.0" type="info"/>
 
 ```bash
