@@ -23,6 +23,7 @@ import (
 	"net/url"
 	paths "path"
 	"regexp"
+	"sort"
 	"strconv"
 	"strings"
 	"time"
@@ -460,15 +461,17 @@ type ResourceSummary struct {
 	Modified []string
 	Replaced []string
 	Destroyed []string
+	Read      []string
 }
 
-// GetResourceSummary extracts a summary of which resources will be created, modified, replaced, or destroyed
+// GetResourceSummary extracts a summary of which resources will be created, modified, replaced, destroyed, or read
 func (p PlanSuccess) GetResourceSummary() ResourceSummary {
 	summary := ResourceSummary{
 		Created:   []string{},
 		Modified:  []string{},
 		Replaced:  []string{},
 		Destroyed: []string{},
+		Read:      []string{},
 	}
 
 	matches := resourceChangeRegex.FindAllStringSubmatch(p.TerraformOutput, -1)
@@ -487,9 +490,18 @@ func (p PlanSuccess) GetResourceSummary() ResourceSummary {
 				summary.Modified = append(summary.Modified, resourceName)
 			case "must be replaced", "will be replaced":
 				summary.Replaced = append(summary.Replaced, resourceName)
+			case "will be read during apply":
+				summary.Read = append(summary.Read, resourceName)
 			}
 		}
 	}
+	
+	// Sort all slices alphabetically
+	sort.Strings(summary.Created)
+	sort.Strings(summary.Modified)
+	sort.Strings(summary.Replaced)
+	sort.Strings(summary.Destroyed)
+	sort.Strings(summary.Read)
 	
 	return summary
 }
@@ -500,7 +512,7 @@ func (p PlanSuccess) FormatResourceSummary() string {
 	var output strings.Builder
 	
 	if len(summary.Created) > 0 {
-		output.WriteString("**Resources to be created:**\n")
+		output.WriteString(fmt.Sprintf("**Resources to be created (%d):**\n", len(summary.Created)))
 		for _, resource := range summary.Created {
 			output.WriteString(fmt.Sprintf("- `%s`\n", resource))
 		}
@@ -508,7 +520,7 @@ func (p PlanSuccess) FormatResourceSummary() string {
 	}
 	
 	if len(summary.Modified) > 0 {
-		output.WriteString("**Resources to be modified:**\n")
+		output.WriteString(fmt.Sprintf("**Resources to be modified (%d):**\n", len(summary.Modified)))
 		for _, resource := range summary.Modified {
 			output.WriteString(fmt.Sprintf("- `%s`\n", resource))
 		}
@@ -516,7 +528,7 @@ func (p PlanSuccess) FormatResourceSummary() string {
 	}
 	
 	if len(summary.Replaced) > 0 {
-		output.WriteString("**Resources to be replaced:**\n")
+		output.WriteString(fmt.Sprintf("**Resources to be replaced (%d):**\n", len(summary.Replaced)))
 		for _, resource := range summary.Replaced {
 			output.WriteString(fmt.Sprintf("- `%s`\n", resource))
 		}
@@ -524,8 +536,16 @@ func (p PlanSuccess) FormatResourceSummary() string {
 	}
 	
 	if len(summary.Destroyed) > 0 {
-		output.WriteString("**Resources to be destroyed:**\n")
+		output.WriteString(fmt.Sprintf("**Resources to be destroyed (%d):**\n", len(summary.Destroyed)))
 		for _, resource := range summary.Destroyed {
+			output.WriteString(fmt.Sprintf("- `%s`\n", resource))
+		}
+		output.WriteString("\n")
+	}
+	
+	if len(summary.Read) > 0 {
+		output.WriteString(fmt.Sprintf("**Resources to be read (%d):**\n", len(summary.Read)))
+		for _, resource := range summary.Read {
 			output.WriteString(fmt.Sprintf("- `%s`\n", resource))
 		}
 		output.WriteString("\n")
