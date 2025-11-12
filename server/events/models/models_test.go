@@ -790,7 +790,7 @@ Plan: 1 to add, 1 to change, 2 to destroy.`,
 
 Plan: 2 to add, 0 to change, 0 to destroy.`,
 			exp: models.ResourceSummary{
-				Created:   []string{"null_resource.simple[0]", "null_resource.simple2"},
+				Created:   []string{"null_resource.simple2", "null_resource.simple[0]"},
 				Modified:  []string{},
 				Replaced:  []string{},
 				Destroyed: []string{},
