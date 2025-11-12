@@ -771,6 +771,7 @@ Plan: 1 to add, 1 to change, 2 to destroy.`,
 				Destroyed: []string{
 					`module.cluster_c2.kubernetes_manifest.karpenter_controller["apps/v1/StatefulSet/karpenter/karpenter-default"]`,
 				},
+				Read: []string{},
 			},
 		},
 		{
@@ -793,6 +794,7 @@ Plan: 2 to add, 0 to change, 0 to destroy.`,
 				Modified:  []string{},
 				Replaced:  []string{},
 				Destroyed: []string{},
+				Read:      []string{},
 			},
 		},
 		{
@@ -803,6 +805,7 @@ Plan: 2 to add, 0 to change, 0 to destroy.`,
 				Modified:  []string{},
 				Replaced:  []string{},
 				Destroyed: []string{},
+				Read:      []string{},
 			},
 		},
 	}
@@ -847,6 +850,15 @@ Plan: 2 to add, 0 to change, 0 to destroy.`,
 					t.Errorf("Destroyed[%d]: exp %q, got %q", i, exp, summary.Destroyed[i])
 				}
 			}
+			
+			if len(summary.Read) != len(tt.exp.Read) {
+				t.Errorf("Read: exp %d, got %d", len(tt.exp.Read), len(summary.Read))
+			}
+			for i, exp := range tt.exp.Read {
+				if i >= len(summary.Read) || summary.Read[i] != exp {
+					t.Errorf("Read[%d]: exp %q, got %q", i, exp, summary.Read[i])
+				}
+			}
 		})
 	}
 }
@@ -870,12 +882,12 @@ Plan: 1 to add, 0 to change, 1 to destroy.`,
 		t.Error("Expected non-empty formatted output")
 	}
 	
-	// Check for expected headings
-	if !contains(formatted, "**Resources to be created:**") {
-		t.Error("Expected 'Resources to be created' heading")
+	// Check for expected headings with counts
+	if !contains(formatted, "**Resources to be created (1):**") {
+		t.Error("Expected 'Resources to be created (1):' heading with count")
 	}
-	if !contains(formatted, "**Resources to be destroyed:**") {
-		t.Error("Expected 'Resources to be destroyed' heading")
+	if !contains(formatted, "**Resources to be destroyed (1):**") {
+		t.Error("Expected 'Resources to be destroyed (1):' heading with count")
 	}
 	
 	// Check for resource names
