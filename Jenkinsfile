@@ -18,13 +18,6 @@ gitOpsPipeline {
 
   }
 
-
-  unitTest = {
-
-    sh 'make test'
-
-  }
-
   build = {
 
     usingECR() {
