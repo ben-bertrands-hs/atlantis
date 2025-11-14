@@ -1,5 +1,5 @@
 {{ define "planSuccessWrapped" -}}
-{{ if .FormatResourceSummary -}}
+{{ if and .EnableResourceSummary .FormatResourceSummary -}}
 {{ .FormatResourceSummary }}
 
 {{ end -}}
