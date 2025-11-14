@@ -23,6 +23,7 @@ import (
 	"net/url"
 	paths "path"
 	"regexp"
+	"sort"
 	"strconv"
 	"strings"
 	"time"
@@ -442,7 +443,7 @@ var (
 	diffListRegex    = regexp.MustCompile(`(?m)^( +)([-+~]\s)(".*",)`)
 	diffTildeRegex   = regexp.MustCompile(`(?m)^~`)
 	// Regex to extract resource change lines from Terraform output
-	resourceChangeRegex = regexp.MustCompile(`(?m)^\s*#\s+(.+?)\s+(will be created|will be destroyed|will be updated in-place|must be replaced|will be replaced|will be read during apply)`)
+	resourceChangeRegex = regexp.MustCompile(`(?m)^\s*#\s+(.+?)\s+(will be created|will be destroyed|will be updated in-place|must be replaced|will be replaced)`)
 )
 
 // DiffMarkdownFormattedTerraformOutput formats the Terraform output to match diff markdown format
@@ -491,6 +492,12 @@ func (p PlanSuccess) GetResourceSummary() ResourceSummary {
 		}
 	}
 	
+	// Sort all slices alphabetically
+	sort.Strings(summary.Created)
+	sort.Strings(summary.Modified)
+	sort.Strings(summary.Replaced)
+	sort.Strings(summary.Destroyed)
+	
 	return summary
 }
 
@@ -500,7 +507,7 @@ func (p PlanSuccess) FormatResourceSummary() string {
 	var output strings.Builder
 	
 	if len(summary.Created) > 0 {
-		output.WriteString("**Resources to be created:**\n")
+		output.WriteString(fmt.Sprintf("**Resources to be created (%d):**\n", len(summary.Created)))
 		for _, resource := range summary.Created {
 			output.WriteString(fmt.Sprintf("- `%s`\n", resource))
 		}
@@ -508,7 +515,7 @@ func (p PlanSuccess) FormatResourceSummary() string {
 	}
 	
 	if len(summary.Modified) > 0 {
-		output.WriteString("**Resources to be modified:**\n")
+		output.WriteString(fmt.Sprintf("**Resources to be modified (%d):**\n", len(summary.Modified)))
 		for _, resource := range summary.Modified {
 			output.WriteString(fmt.Sprintf("- `%s`\n", resource))
 		}
@@ -516,7 +523,7 @@ func (p PlanSuccess) FormatResourceSummary() string {
 	}
 	
 	if len(summary.Replaced) > 0 {
-		output.WriteString("**Resources to be replaced:**\n")
+		output.WriteString(fmt.Sprintf("**Resources to be replaced (%d):**\n", len(summary.Replaced)))
 		for _, resource := range summary.Replaced {
 			output.WriteString(fmt.Sprintf("- `%s`\n", resource))
 		}
@@ -524,7 +531,7 @@ func (p PlanSuccess) FormatResourceSummary() string {
 	}
 	
 	if len(summary.Destroyed) > 0 {
-		output.WriteString("**Resources to be destroyed:**\n")
+		output.WriteString(fmt.Sprintf("**Resources to be destroyed (%d):**\n", len(summary.Destroyed)))
 		for _, resource := range summary.Destroyed {
 			output.WriteString(fmt.Sprintf("- `%s`\n", resource))
 		}

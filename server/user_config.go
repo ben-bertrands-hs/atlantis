@@ -48,6 +48,7 @@ type UserConfig struct {
 	EnableRegExpCmd             bool   `mapstructure:"enable-regexp-cmd"`
 	EnableProfilingAPI          bool   `mapstructure:"enable-profiling-api"`
 	EnableDiffMarkdownFormat    bool   `mapstructure:"enable-diff-markdown-format"`
+	EnableResourceSummary       bool   `mapstructure:"enable-resource-summary"`
 	ExecutableName              string `mapstructure:"executable-name"`
 	// Fail and do not run the Atlantis command request if any of the pre workflow hooks error.
 	FailOnPreWorkflowHookError      bool   `mapstructure:"fail-on-pre-workflow-hook-error"`

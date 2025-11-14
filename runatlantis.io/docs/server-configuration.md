@@ -603,6 +603,16 @@ It's not supposed to be used with `--disable-apply-all`.
 The command `atlantis apply -p .*` will bypass the restriction and run apply on every projects.
 :::
 
+### `--enable-resource-summary`
+
+```bash
+atlantis server --enable-resource-summary
+# or
+ATLANTIS_ENABLE_RESOURCE_SUMMARY=true
+```
+
+Enable resource summary in plan comments showing which resources will be created, modified, replaced, or destroyed.
+
 ### `--executable-name` <Badge text="v0.42.0+" type="info"/>
 
 ```bash

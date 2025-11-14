@@ -789,7 +789,7 @@ Plan: 1 to add, 1 to change, 2 to destroy.`,
 
 Plan: 2 to add, 0 to change, 0 to destroy.`,
 			exp: models.ResourceSummary{
-				Created:   []string{"null_resource.simple[0]", "null_resource.simple2"},
+				Created:   []string{"null_resource.simple2", "null_resource.simple[0]"},
 				Modified:  []string{},
 				Replaced:  []string{},
 				Destroyed: []string{},
@@ -870,12 +870,12 @@ Plan: 1 to add, 0 to change, 1 to destroy.`,
 		t.Error("Expected non-empty formatted output")
 	}
 	
-	// Check for expected headings
-	if !contains(formatted, "**Resources to be created:**") {
-		t.Error("Expected 'Resources to be created' heading")
+	// Check for expected headings with counts
+	if !contains(formatted, "**Resources to be created (1):**") {
+		t.Error("Expected 'Resources to be created (1):' heading with count")
 	}
-	if !contains(formatted, "**Resources to be destroyed:**") {
-		t.Error("Expected 'Resources to be destroyed' heading")
+	if !contains(formatted, "**Resources to be destroyed (1):**") {
+		t.Error("Expected 'Resources to be destroyed (1):' heading with count")
 	}
 	
 	// Check for resource names

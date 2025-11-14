@@ -67,6 +67,7 @@ func TestRenderErr(t *testing.T) {
 		false,      // disableMarkdownFolding
 		false,      // disableRepoLocking
 		false,      // enableDiffMarkdownFormat
+		false,      // enableResourceSummary
 		"",         // markdownTemplateOverridesDir
 		"atlantis", // executableName
 		false,      // hideUnchangedPlanComments
@@ -142,6 +143,7 @@ func TestRenderFailure(t *testing.T) {
 		false,      // disableMarkdownFolding
 		false,      // disableRepoLocking
 		false,      // enableDiffMarkdownFormat
+		false,      // enableResourceSummary
 		"",         // markdownTemplateOverridesDir
 		"atlantis", // executableName
 		false,      // hideUnchangedPlanComments
@@ -192,6 +194,7 @@ func TestRenderErrAndFailure(t *testing.T) {
 		false,      // disableMarkdownFolding
 		false,      // disableRepoLocking
 		false,      // enableDiffMarkdownFormat
+		false,      // enableResourceSummary
 		"",         // markdownTemplateOverridesDir
 		"atlantis", // executableName
 		false,      // hideUnchangedPlanComments
@@ -1199,6 +1202,7 @@ $$$
 		false,      // disableMarkdownFolding
 		false,      // disableRepoLocking
 		false,      // enableDiffMarkdownFormat
+		false,      // enableResourceSummary
 		"",         // markdownTemplateOverridesDir
 		"atlantis", // executableName
 		false,      // hideUnchangedPlanComments
@@ -1573,6 +1577,7 @@ $$$
 		false,      // disableMarkdownFolding
 		false,      // disableRepoLocking
 		false,      // enableDiffMarkdownFormat
+		false,      // enableResourceSummary
 		"",         // markdownTemplateOverridesDir
 		"atlantis", // executableName
 		false,      // hideUnchangedPlanComments
@@ -1774,6 +1779,7 @@ $$$
 		false,      // disableMarkdownFolding
 		false,      // disableRepoLocking
 		false,      // enableDiffMarkdownFormat
+		false,      // enableResourceSummary
 		"",         // markdownTemplateOverridesDir
 		"atlantis", // executableName
 		false,      // hideUnchangedPlanComments
@@ -1959,6 +1965,7 @@ $$$
 		false,      // disableMarkdownFolding
 		false,      // disableRepoLocking
 		false,      // enableDiffMarkdownFormat
+		false,      // enableResourceSummary
 		"",         // markdownTemplateOverridesDir
 		"atlantis", // executableName
 		false,      // hideUnchangedPlanComments
@@ -2018,6 +2025,7 @@ func TestRenderCustomPolicyCheckTemplate_DisableApplyAll(t *testing.T) {
 		false,      // disableMarkdownFolding
 		false,      // disableRepoLocking
 		false,      // enableDiffMarkdownFormat
+		false,      // enableResourceSummary
 		tmpDir,     // markdownTemplateOverridesDir
 		"atlantis", // executableName
 		false,      // hideUnchangedPlanComments
@@ -2093,6 +2101,7 @@ func TestRenderProjectResults_DisableFolding(t *testing.T) {
 		true,       // disableMarkdownFolding
 		false,      // disableRepoLocking
 		false,      // enableDiffMarkdownFormat
+		false,      // enableResourceSummary
 		"",         // markdownTemplateOverridesDir
 		"atlantis", // executableName
 		false,      // hideUnchangedPlanComments
@@ -2203,6 +2212,7 @@ func TestRenderProjectResults_WrappedErr(t *testing.T) {
 					false,                     // disableMarkdownFolding
 					false,                     // disableRepoLocking
 					false,                     // enableDiffMarkdownFormat
+					false,                     // enableResourceSummary
 					"",                        // markdownTemplateOverridesDir
 					"atlantis",                // executableName
 					false,                     // hideUnchangedPlanComments
@@ -2348,12 +2358,13 @@ func TestRenderProjectResults_WrapSingleProject(t *testing.T) {
 						false,                     // disableApply
 						false,                     // disableMarkdownFolding
 						false,                     // disableRepoLocking
-						false,                     // enableDiffMarkdownFormat
-						"",                        // markdownTemplateOverridesDir
-						"atlantis",                // executableName
-						false,                     // hideUnchangedPlanComments
-						false,                     // quietPolicyChecks
-					)
+					false,                     // enableDiffMarkdownFormat
+					false,                     // enableResourceSummary
+					"",                        // markdownTemplateOverridesDir
+					"atlantis",                // executableName
+					false,                     // hideUnchangedPlanComments
+					false,                     // quietPolicyChecks
+				)
 					logger := logging.NewNoopLogger(t).WithHistory()
 					logText := "log"
 					logger.Info(logText)
@@ -2500,6 +2511,7 @@ func TestRenderProjectResults_MultiProjectApplyWrapped(t *testing.T) {
 		false,      // disableMarkdownFolding
 		false,      // disableRepoLocking
 		false,      // enableDiffMarkdownFormat
+		false,      // enableResourceSummary
 		"",         // markdownTemplateOverridesDir
 		"atlantis", // executableName
 		false,      // hideUnchangedPlanComments
@@ -2580,6 +2592,7 @@ func TestRenderProjectResults_MultiProjectPlanWrapped(t *testing.T) {
 		false,      // disableMarkdownFolding
 		false,      // disableRepoLocking
 		false,      // enableDiffMarkdownFormat
+		false,      // enableResourceSummary
 		"",         // markdownTemplateOverridesDir
 		"atlantis", // executableName
 		false,      // hideUnchangedPlanComments
@@ -2807,6 +2820,7 @@ This plan was not saved because one or more projects failed and automerge requir
 				false,      // disableMarkdownFolding
 				false,      // disableRepoLocking
 				false,      // enableDiffMarkdownFormat
+				false,      // enableResourceSummary
 				"",         // markdownTemplateOverridesDir
 				"atlantis", // executableName
 				false,      // hideUnchangedPlanComments
@@ -3364,6 +3378,7 @@ $$$
 		false,      // disableMarkdownFolding
 		true,       // disableRepoLocking
 		false,      // enableDiffMarkdownFormat
+		false,      // enableResourceSummary
 		"",         // markdownTemplateOverridesDir
 		"atlantis", // executableName
 		false,      // hideUnchangedPlanComments
@@ -3502,6 +3517,7 @@ $$$
 		false,      // disableMarkdownFolding
 		true,       // disableRepoLocking
 		false,      // enableDiffMarkdownFormat
+		false,      // enableResourceSummary
 		"",         // markdownTemplateOverridesDir
 		"atlantis", // executableName
 		false,      // hideUnchangedPlanComments
@@ -3962,6 +3978,7 @@ func TestRenderProjectResultsWithEnableDiffMarkdownFormat(t *testing.T) {
 		false,      // disableMarkdownFolding
 		false,      // disableRepoLocking
 		true,       // enableDiffMarkdownFormat
+		false,      // enableResourceSummary
 		"",         // markdownTemplateOverridesDir
 		"atlantis", // executableName
 		false,      // hideUnchangedPlanComments
@@ -4018,6 +4035,7 @@ func BenchmarkRenderProjectResultsWithEnableDiffMarkdownFormat(b *testing.B) {
 		false,      // disableMarkdownFolding
 		false,      // disableRepoLocking
 		true,       // enableDiffMarkdownFormat
+		false,      // enableResourceSummary
 		"",         // markdownTemplateOverridesDir
 		"atlantis", // executableName
 		false,      // hideUnchangedPlanComments
@@ -4231,6 +4249,7 @@ Ran Plan for 3 projects:
 		false,      // disableMarkdownFolding
 		false,      // disableRepoLocking
 		false,      // enableDiffMarkdownFormat
+		false,      // enableResourceSummary
 		"",         // markdownTemplateOverridesDir
 		"atlantis", // executableName
 		true,       // hideUnchangedPlanComments
@@ -4271,6 +4290,114 @@ Ran Plan for 3 projects:
 							fmt.Sprintf("\n<details><summary>Log</summary>\n<p>\n\n```\n%s\n```\n</p></details>", log), normalize(s))
 					}
 				})
+			}
+		})
+	}
+}
+
+func TestRenderProjectResultsWithEnableResourceSummary(t *testing.T) {
+	terraformOutput := `Terraform will perform the following actions:
+
+  # aws_instance.example will be created
++ resource "aws_instance" "example" {
+    + ami           = "ami-12345678"
+    + instance_type = "t2.micro"
+  }
+
+  # aws_s3_bucket.test will be created
++ resource "aws_s3_bucket" "test" {
+    + bucket = "my-test-bucket"
+  }
+
+  # aws_security_group.web will be updated in-place
+~ resource "aws_security_group" "web" {
+    ~ name = "old-name" -> "new-name"
+  }
+
+Plan: 2 to add, 1 to change, 0 to destroy.`
+
+	cases := []struct {
+		Description     string
+		EnableSummary   bool
+		ExpectedInOutput string
+		ShouldContain   bool
+	}{
+		{
+			Description:     "Resource summary disabled (default)",
+			EnableSummary:   false,
+			ExpectedInOutput: "Resources to be created",
+			ShouldContain:   false,
+		},
+		{
+			Description:     "Resource summary enabled",
+			EnableSummary:   true,
+			ExpectedInOutput: "Resources to be created (2):",
+			ShouldContain:   true,
+		},
+	}
+
+	for _, c := range cases {
+		t.Run(c.Description, func(t *testing.T) {
+			r := events.NewMarkdownRenderer(
+				false,      // gitlabSupportsCommonMark
+				false,      // disableApplyAll
+				false,      // disableApply
+				false,      // disableMarkdownFolding
+				false,      // disableRepoLocking
+				false,      // enableDiffMarkdownFormat
+				c.EnableSummary, // enableResourceSummary
+				"",         // markdownTemplateOverridesDir
+				"atlantis", // executableName
+				false,      // hideUnchangedPlanComments
+				false,      // quietPolicyChecks
+			)
+
+			logger := logging.NewNoopLogger(t).WithHistory()
+			ctx := &command.Context{
+				Log: logger,
+				Pull: models.PullRequest{
+					BaseRepo: models.Repo{
+						VCSHost: models.VCSHost{
+							Type: models.Github,
+						},
+					},
+				},
+			}
+
+			res := command.Result{
+				ProjectResults: []command.ProjectResult{
+					{
+						PlanSuccess: &models.PlanSuccess{
+							TerraformOutput: terraformOutput,
+						},
+						Workspace:  "default",
+						RepoRelDir: ".",
+					},
+				},
+			}
+
+			cmd := &events.CommentCommand{
+				Name:    command.Plan,
+				Verbose: false,
+			}
+
+			output := r.Render(ctx, res, cmd)
+
+			if c.ShouldContain {
+				if !strings.Contains(output, c.ExpectedInOutput) {
+					t.Errorf("Expected output to contain '%s' when enabled, but it didn't. Output: %s", c.ExpectedInOutput, output)
+				}
+				// Also check for other expected sections
+				if !strings.Contains(output, "aws_instance.example") {
+					t.Error("Expected output to contain resource name 'aws_instance.example'")
+				}
+				if !strings.Contains(output, "Resources to be modified (1):") {
+					t.Error("Expected output to contain modified resources section")
+				}
+			} else {
+				if strings.Contains(output, c.ExpectedInOutput) {
+					t.Errorf("Expected output NOT to contain '%s' when disabled, but it did. Output: %s", c.ExpectedInOutput, output)
+				}
 			}
 		})
 	}

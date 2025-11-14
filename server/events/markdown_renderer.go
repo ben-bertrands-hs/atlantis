@@ -54,6 +54,7 @@ type MarkdownRenderer struct {
 	disableMarkdownFolding    bool
 	disableRepoLocking        bool
 	enableDiffMarkdownFormat  bool
+	enableResourceSummary     bool
 	markdownTemplates         *template.Template
 	executableName            string
 	hideUnchangedPlanComments bool
@@ -119,6 +120,7 @@ type planSuccessData struct {
 	DisableApply             bool
 	DisableRepoLocking       bool
 	EnableDiffMarkdownFormat bool
+	EnableResourceSummary    bool
 	PlanStats                models.PlanSuccessStats
 }
 
@@ -149,6 +151,7 @@ func NewMarkdownRenderer(
 	disableMarkdownFolding bool,
 	disableRepoLocking bool,
 	enableDiffMarkdownFormat bool,
+	enableResourceSummary bool,
 	markdownTemplateOverridesDir string,
 	executableName string,
 	hideUnchangedPlanComments bool,
@@ -167,6 +170,7 @@ func NewMarkdownRenderer(
 		disableApply:              disableApply,
 		disableRepoLocking:        disableRepoLocking,
 		enableDiffMarkdownFormat:  enableDiffMarkdownFormat,
+		enableResourceSummary:     enableResourceSummary,
 		markdownTemplates:         templates,
 		executableName:            executableName,
 		hideUnchangedPlanComments: hideUnchangedPlanComments,
@@ -243,6 +247,7 @@ func (m *MarkdownRenderer) renderProjectResults(ctx *command.Context, results []
 				DisableApply:             common.DisableApply,
 				DisableRepoLocking:       common.DisableRepoLocking,
 				EnableDiffMarkdownFormat: common.EnableDiffMarkdownFormat,
+				EnableResourceSummary:    m.enableResourceSummary,
 				PlanStats:                result.PlanSuccess.Stats(),
 			}
 			if m.shouldUseWrappedTmpl(vcsHost, result.PlanSuccess.TerraformOutput) {

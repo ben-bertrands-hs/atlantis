@@ -85,6 +85,7 @@ const (
 	DiscardApprovalOnPlanFlag        = "discard-approval-on-plan"
 	EmojiReaction                    = "emoji-reaction"
 	EnableDiffMarkdownFormat         = "enable-diff-markdown-format"
+	EnableResourceSummaryFlag        = "enable-resource-summary"
 	EnablePolicyChecksFlag           = "enable-policy-checks"
 	EnableRegExpCmdFlag              = "enable-regexp-cmd"
 	EnableProfilingAPI               = "enable-profiling-api"
@@ -540,6 +541,10 @@ var boolFlags = map[string]boolFlag{
 	},
 	EnableDiffMarkdownFormat: {
 		description:  "Enable Atlantis to format Terraform plan output into a markdown-diff friendly format for color-coding purposes.",
+		defaultValue: false,
+	},
+	EnableResourceSummaryFlag: {
+		description:  "Enable resource summary in plan comments showing which resources will be created, modified, replaced, or destroyed.",
 		defaultValue: false,
 	},
 	FailOnPreWorkflowHookError: {
