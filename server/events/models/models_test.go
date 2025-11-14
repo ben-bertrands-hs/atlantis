@@ -771,7 +771,6 @@ Plan: 1 to add, 1 to change, 2 to destroy.`,
 				Destroyed: []string{
 					`module.cluster_c2.kubernetes_manifest.karpenter_controller["apps/v1/StatefulSet/karpenter/karpenter-default"]`,
 				},
-				Read: []string{},
 			},
 		},
 		{
@@ -794,7 +793,6 @@ Plan: 2 to add, 0 to change, 0 to destroy.`,
 				Modified:  []string{},
 				Replaced:  []string{},
 				Destroyed: []string{},
-				Read:      []string{},
 			},
 		},
 		{
@@ -805,7 +803,6 @@ Plan: 2 to add, 0 to change, 0 to destroy.`,
 				Modified:  []string{},
 				Replaced:  []string{},
 				Destroyed: []string{},
-				Read:      []string{},
 			},
 		},
 	}
@@ -848,15 +845,6 @@ Plan: 2 to add, 0 to change, 0 to destroy.`,
 			for i, exp := range tt.exp.Destroyed {
 				if i >= len(summary.Destroyed) || summary.Destroyed[i] != exp {
 					t.Errorf("Destroyed[%d]: exp %q, got %q", i, exp, summary.Destroyed[i])
-				}
-			}
-			
-			if len(summary.Read) != len(tt.exp.Read) {
-				t.Errorf("Read: exp %d, got %d", len(tt.exp.Read), len(summary.Read))
-			}
-			for i, exp := range tt.exp.Read {
-				if i >= len(summary.Read) || summary.Read[i] != exp {
-					t.Errorf("Read[%d]: exp %q, got %q", i, exp, summary.Read[i])
 				}
 			}
 		})

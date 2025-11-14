@@ -443,7 +443,7 @@ var (
 	diffListRegex    = regexp.MustCompile(`(?m)^( +)([-+~]\s)(".*",)`)
 	diffTildeRegex   = regexp.MustCompile(`(?m)^~`)
 	// Regex to extract resource change lines from Terraform output
-	resourceChangeRegex = regexp.MustCompile(`(?m)^\s*#\s+(.+?)\s+(will be created|will be destroyed|will be updated in-place|must be replaced|will be replaced|will be read during apply)`)
+	resourceChangeRegex = regexp.MustCompile(`(?m)^\s*#\s+(.+?)\s+(will be created|will be destroyed|will be updated in-place|must be replaced|will be replaced)`)
 )
 
 // DiffMarkdownFormattedTerraformOutput formats the Terraform output to match diff markdown format
@@ -461,17 +461,15 @@ type ResourceSummary struct {
 	Modified []string
 	Replaced []string
 	Destroyed []string
-	Read      []string
 }
 
-// GetResourceSummary extracts a summary of which resources will be created, modified, replaced, destroyed, or read
+// GetResourceSummary extracts a summary of which resources will be created, modified, replaced, or destroyed
 func (p PlanSuccess) GetResourceSummary() ResourceSummary {
 	summary := ResourceSummary{
 		Created:   []string{},
 		Modified:  []string{},
 		Replaced:  []string{},
 		Destroyed: []string{},
-		Read:      []string{},
 	}
 
 	matches := resourceChangeRegex.FindAllStringSubmatch(p.TerraformOutput, -1)
@@ -490,8 +488,6 @@ func (p PlanSuccess) GetResourceSummary() ResourceSummary {
 				summary.Modified = append(summary.Modified, resourceName)
 			case "must be replaced", "will be replaced":
 				summary.Replaced = append(summary.Replaced, resourceName)
-			case "will be read during apply":
-				summary.Read = append(summary.Read, resourceName)
 			}
 		}
 	}
@@ -501,7 +497,6 @@ func (p PlanSuccess) GetResourceSummary() ResourceSummary {
 	sort.Strings(summary.Modified)
 	sort.Strings(summary.Replaced)
 	sort.Strings(summary.Destroyed)
-	sort.Strings(summary.Read)
 	
 	return summary
 }
@@ -538,14 +533,6 @@ func (p PlanSuccess) FormatResourceSummary() string {
 	if len(summary.Destroyed) > 0 {
 		output.WriteString(fmt.Sprintf("**Resources to be destroyed (%d):**\n", len(summary.Destroyed)))
 		for _, resource := range summary.Destroyed {
-			output.WriteString(fmt.Sprintf("- `%s`\n", resource))
-		}
-		output.WriteString("\n")
-	}
-	
-	if len(summary.Read) > 0 {
-		output.WriteString(fmt.Sprintf("**Resources to be read (%d):**\n", len(summary.Read)))
-		for _, resource := range summary.Read {
 			output.WriteString(fmt.Sprintf("- `%s`\n", resource))
 		}
 		output.WriteString("\n")
